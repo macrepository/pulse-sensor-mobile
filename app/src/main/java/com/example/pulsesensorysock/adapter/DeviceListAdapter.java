@@ -66,7 +66,7 @@ public class DeviceListAdapter extends BaseAdapter {
 
         BluetoothDevice device	= mData.get(position);
         try {
-            holder.deviceName.setText((device.getName().equals("HC-05")) ? "POWLET" : device.getName());
+            holder.deviceName.setText(device.getName());
             holder.deviceAddress.setText(device.getAddress());
             holder.pairBtn.setText((device.getBondState() == BluetoothDevice.BOND_BONDED) ? "Unpair" : "Pair");
             holder.pairBtn.setOnClickListener(new View.OnClickListener() {

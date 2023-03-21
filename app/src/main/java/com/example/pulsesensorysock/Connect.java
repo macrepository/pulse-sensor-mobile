@@ -2,21 +2,24 @@ package com.example.pulsesensorysock;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListAdapter;
@@ -35,15 +38,15 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.pulsesensorysock.adapter.DeviceListAdapter;
 import com.example.pulsesensorysock.connect.BluetoothService;
+import com.example.pulsesensorysock.connect.BluetoothService.LocalBinder;
 import com.example.pulsesensorysock.helper.Helper;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.UUID;
 
 public class Connect extends AppCompatActivity {
-    private static final int PERMISSION_ASK = 225;
 
     // UI Controls
     private ScrollView scrollView;
@@ -67,14 +70,17 @@ public class Connect extends AppCompatActivity {
     private DeviceListAdapter availableDeviceAdapter;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
+    //Connect
+    boolean mBounded;
+    static BluetoothService mServer;
 
+    // Progress Dialog
     private ProgressDialog mProgressDlg;
+    private ProgressDialog progressDialog;
 
     //Custom Data
-    private boolean btSwitchData = false;
     BluetoothDevice myDevice;
     private int pos = 0;
-    private boolean isConnected = false;
 
     private ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -86,6 +92,7 @@ public class Connect extends AppCompatActivity {
                         doBluetoothTask();
                     } else if(result.getResultCode() == 0) {
                         // Deny
+                        setBluetoothDisabled();
                     }
                 }
             });
@@ -114,6 +121,7 @@ public class Connect extends AppCompatActivity {
 
         //Initialize other tools
         initializeProgressDialog();
+        initializeProgressDialogScan();
         initializePairedAdapter();
         initializeAvailableAdapter();
 
@@ -124,8 +132,6 @@ public class Connect extends AppCompatActivity {
 
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isCheck) {
-                    btSwitchData = isCheck;
-
                     if (isCheck) {
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         activityResultLaunch.launch(enableBtIntent);
@@ -153,6 +159,13 @@ public class Connect extends AppCompatActivity {
     }
 
     private void initializePairedAdapter() {
+        lvPaired.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showAlertDialog(position);
+            }
+        });
+
         pairedDeviceAdapter	= new DeviceListAdapter(this);
         pairedDeviceAdapter.setListener(new DeviceListAdapter.OnPairButtonClickListener() {
             @SuppressLint("MissingPermission")
@@ -165,6 +178,69 @@ public class Connect extends AppCompatActivity {
 
         lvPaired.setAdapter(pairedDeviceAdapter);
     }
+
+    @SuppressLint("MissingPermission")
+    public void showAlertDialog(final int position){
+        BluetoothDevice device = pairedDeviceList.get(position);
+        String title = device.getName();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(title);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                BluetoothDevice device = pairedDeviceList.get(position);
+                myDevice = device;
+                startBluetoothService();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void startBluetoothService()
+    {
+        progressDialog.setTitle("Connecting...");
+        progressDialog.show();
+
+        Thread welcomeThread = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    super.run();
+                    sleep(1000);
+                    Log.i("Process", "trying to connect");
+                    Intent serviceIntent = new Intent(getApplicationContext(), BluetoothService.class);
+                    serviceIntent.putExtra("device_address", myDevice.getAddress());
+                    startService(serviceIntent);
+                    scrollViewFocusUp();
+                    sleep(500);
+                } catch (Exception e) {
+
+                } catch (Throwable t) {
+
+                } finally {
+                    if (!BluetoothService.isConnected(myDevice)) {
+                        startBluetoothService();
+                    } else {
+                        progressDialog.dismiss();
+                    }
+                }
+            }
+        };
+        welcomeThread.start();
+    }
+
 
     private void initializeAvailableAdapter() {
         availableDeviceAdapter = new DeviceListAdapter(this);
@@ -214,14 +290,28 @@ public class Connect extends AppCompatActivity {
             pairedDeviceAdapter.notifyDataSetChanged();
             setListViewHeightBasedOnChildren(lvPaired);
 
-            bluetoothAdapter.startDiscovery();
-            listen();
+            if(!BluetoothService.isConnected(myDevice)) {
+                Log.i("Unpair", "Not connected");
+                btStatus.setText("Not Connected");
+            } else {
+                Log.i("Unpair", "Still connected");
+            }
+
+//            bluetoothAdapter.startDiscovery();
+//            listen();
         } catch (Exception e) {
             e.printStackTrace();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
     private void initializeProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(true);
+    }
+
+    private void initializeProgressDialogScan() {
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning devices...");
         mProgressDlg.setCancelable(false);
@@ -287,6 +377,7 @@ public class Connect extends AppCompatActivity {
 
         //UI controls
         btSwitch.setText("Enable");
+        btSwitch.setChecked(false);
         btStatus.setText("Not Connected");
         btStatus.setVisibility(View.INVISIBLE);
 
@@ -318,6 +409,11 @@ public class Connect extends AppCompatActivity {
             if(pairedDevices.size() > 0) {
                 for (BluetoothDevice device : pairedDevices) {
                     pairedDeviceList.add(device);
+
+                    // Display status if has connection
+                    if (BluetoothService.isConnected(device)) {
+                        btStatus.setText("Connected to " + device.getName());
+                    }
                 }
             }
 
@@ -352,69 +448,6 @@ public class Connect extends AppCompatActivity {
         listView.setLayoutParams(params);
         listView.requestLayout();
     }
-
-//    private boolean isBluetoothEnabled() {
-//        if (isBluetoothAccessGranted()) {
-//            return bluetoothAdapter.isEnabled();
-//        } else {
-//            return false;
-//        }
-//    }
-
-//    @SuppressLint("NewApi")
-//    private void toggleBluetooth() {
-//        if (!isBluetoothAccessGranted()) {
-//            askForBluetoothPermissions();
-//        } else enableDisabled();
-//    }
-
-//    @SuppressLint("MissingPermission")
-//    private void enableDisabled()
-//    {
-//        if (btSwitchData && !bluetoothAdapter.isEnabled()) {
-//            bluetoothAdapter.enable();
-//            btSwitch.setText("Disabled");
-//        } else {
-//            bluetoothAdapter.disable();
-//            btSwitch.setText("Enable");
-//        }
-//    }
-
-//    private boolean isBluetoothAccessGranted()
-//    {
-//        Boolean bluetoothGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED;
-//        Boolean bluetoothAdminGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED;
-//
-//        return bluetoothGranted  && bluetoothAdminGranted;
-//    }
-
-//    @RequiresApi(api = Build.VERSION_CODES.M)
-//    private void askForBluetoothPermissions() {
-//        String[] permissions = new String[] {
-//                Manifest.permission.BLUETOOTH,
-//                Manifest.permission.BLUETOOTH_ADMIN
-//        };
-//
-//        ActivityCompat.requestPermissions(this, permissions, PERMISSION_ASK);
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        switch (requestCode) {
-//            case PERMISSION_ASK:
-//                if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-//                    enableDisabled();
-//                } else {
-//                    // permissions not granted
-//                    // DO NOT PERFORM THE TASK, it will fail/crash
-//                    helper.showToast("Permission not granted.");
-//                }
-//                break;
-//            default:
-//                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//                break;
-//        }
-//    }
 
     // Create a BroadcastReceiver.
     private final BroadcastReceiver availableReceiver = new BroadcastReceiver() {
@@ -455,7 +488,11 @@ public class Connect extends AppCompatActivity {
                 Log.i("Click", "ACTION_FOUND");
                 BluetoothDevice device =  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i("Click", "" + device.getName());
-                availableDeviceList.add(device);
+
+                // Do not add to list of available devices, If it is found in the list of paired devices
+                if (!pairedDeviceList.contains(device)) {
+                    availableDeviceList.add(device);
+                }
             }
         }
     };
@@ -472,10 +509,6 @@ public class Connect extends AppCompatActivity {
                 if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
                     try {
                         Log.i("Bonded", "Pairing processes here...");
-                        Intent serviceIntent = new Intent(getApplicationContext(), BluetoothService.class);
-                        serviceIntent.putExtra("device_address", myDevice.getAddress());
-                        startService(serviceIntent);
-                        isConnected = true;
 
                         // Remove in the list of available devices
                         availableDeviceList.remove(pos);
@@ -489,28 +522,31 @@ public class Connect extends AppCompatActivity {
                         pairedDeviceAdapter.setData(pairedDeviceList, myDevice.getName());
                         pairedDeviceAdapter.notifyDataSetChanged();
                         setListViewHeightBasedOnChildren(lvPaired);
-                        scrollView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                scrollView.fullScroll(ScrollView.FOCUS_UP);
-                            }
-                        });
+
+                        startBluetoothService();
+                        scrollViewFocusUp();
                         helper.showToast("Paired");
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
                 } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
                     helper.showToast("Unpaired");
-
-//                    if(myDevice.getName().equals("HC-05"))
-//                        txt_status.setText("Not Connected");
-//                    isConnected = false;
+                    btStatus.setText("Not Connected");
                 }
 
                 pairedDeviceAdapter.notifyDataSetChanged();
             }
         }
     };
+
+    private void scrollViewFocusUp() {
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(ScrollView.FOCUS_UP);
+            }
+        });
+    }
 
     // Override the onRequestPermissionsResult() method to handle the result of the permission request
     @SuppressLint("MissingPermission")
@@ -540,19 +576,6 @@ public class Connect extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//
-//        // Don't forget to unregister
-//        unregisterReceiver(pairReceiver);
-//        unregisterReceiver(availableReceiver);
-//    }
-
-    public static void notifyBtStatus(String msg) {
-        btStatus.setText(msg);
-    }
-
     @SuppressLint("MissingPermission")
     @Override
     public void onPause() {
@@ -562,5 +585,44 @@ public class Connect extends AppCompatActivity {
             }
         }
         super.onPause();
+    }
+
+    // ============================Bluetooth Service========================================
+    public static void notifyBtStatus(String msg) {
+        btStatus.setText(msg);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent mIntent = new Intent(this, BluetoothService.class);
+        bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+    }
+
+    ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            //  Toast.makeText(Connect.this, "Service is disconnected", Toast.LENGTH_SHORT).show();
+            mBounded = false;
+            mServer = null;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            //Toast.makeText(Connect.this, "Service is connected", Toast.LENGTH_SHORT).show();
+            mBounded = true;
+            LocalBinder mLocalBinder = (LocalBinder)service;
+            mServer = mLocalBinder.getServerInstance();
+        }
+    };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mBounded) {
+            unbindService(mConnection);
+            mBounded = false;
+        }
     }
 }
