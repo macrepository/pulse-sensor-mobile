@@ -21,4 +21,10 @@
     <string name="default_device_name">Galaxy Nexus</string>
     <string name="default_device_address">000000000</string>
     <string name="btn_device_paired">PAIR</string>
+
+    <string name="greetings_name">Good Day, Maria!</string>
+    <string name="greetings">Welcome to Tibializer!</string>
+
+    <string name="about_label">What is TIBIALIZER</string>
+    <string name="about">Tibializer is a pulse rate monitoring sock, made using a microcontroller chip and a heart rate sensor that connects to this app that makes it possible for this innovative pulse sensor accessory. For its utilization, the device must be worn as a sock that reaches the user\'s ankle, where the sensor would detect the pulse in the posterior tibial artery. Then, it will send the data to the accompanying mobile-app in real time that notifies and updates their pulse rate through their smartphone. This aims to assist people suffering from heart problems or cardiovascular diseases in going about their daily lives. Although this device cannot cure, it intends to provide an early warning in case of any anomalies or deviations from the normal range and reduce the number of fatalities caused by cardiovascular disease worldwide.</string>
 </resources>

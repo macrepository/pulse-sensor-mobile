@@ -26,4 +26,11 @@
     <color name="grey">#000</color>
     <color name="black_overlay">#66000000</color>
     <color name="bluetooth">#387ad1</color>
+
+    <color name="card_view_red">#ff0000</color>
+    <color name="card_view_red_label">#920000</color>
+    <color name="card_view_light_blue">#72d5df</color>
+    <color name="card_view_blue_label">#008b99</color>
+    <color name="about_background">#2b5f74</color>
+    <color name="about_text_color">#d4cdcd</color>
 </resources>
