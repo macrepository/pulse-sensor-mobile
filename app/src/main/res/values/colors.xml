@@ -33,4 +33,5 @@
     <color name="card_view_blue_label">#008b99</color>
     <color name="about_background">#2b5f74</color>
     <color name="about_text_color">#d4cdcd</color>
+    <color name="text_color">#eeffff</color>
 </resources>

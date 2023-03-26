@@ -39,6 +39,7 @@
         <activity
             android:name=".Connect"
             android:label="Connect"
+            android:theme="@style/Theme.Connect"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,6 +48,7 @@
         <activity
             android:name=".PulseRate"
             android:label="Heart Rate"
+            android:theme="@style/Theme.pulse"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

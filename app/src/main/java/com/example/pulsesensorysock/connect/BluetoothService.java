@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.pulsesensorysock.Connect;
+import com.example.pulsesensorysock.PulseRate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -145,6 +146,7 @@ public class BluetoothService extends Service {
                                             public void run() {
                                                 //Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
                                                 Log.i("From device", "" + data);
+                                                PulseRate.displayHeartRate(data);
                                             }
                                         });
 
@@ -194,7 +196,7 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
         closeSocket();
     }
 

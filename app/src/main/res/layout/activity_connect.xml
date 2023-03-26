@@ -27,6 +27,9 @@
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:text="@string/btn_switch"
+                android:textColor="#008b99"
+                android:trackTint="@drawable/newtrack"
+                android:thumbTint="@drawable/newthumb"
                 android:textSize="18sp" />
 
             <TextView
@@ -36,7 +39,8 @@
                 android:layout_marginTop="30dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/not_connected_label" />
+                android:text="@string/not_connected_label"
+                android:textColor="#008b99" />
 
             <TextView
                 android:id="@+id/txt_paired"
@@ -44,7 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:layout_weight="1"
-                android:text="@string/label_paired_devices" />
+                android:text="@string/label_paired_devices"
+                android:textColor="#008b99" />
 
             <ListView
                 android:id="@+id/lv_paired"
@@ -60,8 +65,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:background="@drawable/round_button"
                 android:text="@string/btn_scan_devices"
-                android:textColor="#2E2828" />
+                android:textColor="#eeffff" />
 
             <TextView
                 android:id="@+id/txt_available"
@@ -69,7 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:text="@string/txt_available_devices_label" />
+                android:text="@string/txt_available_devices_label"
+                android:textColor="#008b99" />
 
             <ListView
                 android:id="@+id/lv_available"

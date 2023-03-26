@@ -13,9 +13,10 @@
     <string name="txt_available_devices_label">Available device(s)</string>
 
     <!--Activity Pulse Rate-->
-    <string name="heart_rate_default">67</string>
+    <string name="heart_rate_default">167</string>
     <string name="heart_rate_label">BPM</string>
     <string name="heart_rate_note">Measuring Heart Rate...</string>
+    <string name="average_label">AVERAGE</string>
 
     <!-- Device List Adapter -->
     <string name="default_device_name">Galaxy Nexus</string>

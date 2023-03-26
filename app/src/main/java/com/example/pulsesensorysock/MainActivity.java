@@ -19,10 +19,13 @@ public class MainActivity extends AppCompatActivity {
         catch (NullPointerException e){}
         setContentView(R.layout.activity_main);
 
-        LinearLayout connect, pulseRate;
+        LinearLayout connect, pulseRate, connectLabel, pulseRateLbael;
 
         connect = findViewById(R.id.main_connect);
         pulseRate = findViewById(R.id.main_pulserate);
+
+        connectLabel = findViewById(R.id.main_connect_label);
+        pulseRateLbael = findViewById(R.id.main_pulserate_label);
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,7 +35,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        connectLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentCon = new Intent(getApplication(), Connect.class);
+                startActivity(intentCon);
+            }
+        });
+
         pulseRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentPulseRate = new Intent(getApplication(), PulseRate.class);
+                startActivity(intentPulseRate);
+            }
+        });
+
+        pulseRateLbael.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intentPulseRate = new Intent(getApplication(), PulseRate.class);

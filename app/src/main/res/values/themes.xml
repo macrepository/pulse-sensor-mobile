@@ -13,4 +13,38 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <!--Connect activity-->
+    <style name="Theme.Connect" parent="@style/Theme.AppCompat.Light">
+        <item name="actionBarTheme">@style/MyTheme.ActionBarTheme</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
+    </style>
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/about_background</item>
+        <item name="titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+    </style>
+    <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+    <style name="MyTheme.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/text_color</item>
+    </style>
+
+    <!-- Pulse Rate Activity   -->
+    <style name="Theme.pulse" parent="@style/Theme.AppCompat.Light">
+        <item name="actionBarTheme">@style/Pulse.ActionBarTheme</item>
+        <item name="actionBarStyle">@style/pulse.MyActionBar</item>
+    </style>
+    <style name="pulse.MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/white</item>
+        <item name="titleTextStyle">@style/Pulse.ActionBar.TitleTextStyle</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="elevation">0dp</item>
+    </style>
+    <style name="Pulse.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/card_view_blue_label</item>
+    </style>
+    <style name="Pulse.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/card_view_blue_label</item>
+    </style>
 </resources>
