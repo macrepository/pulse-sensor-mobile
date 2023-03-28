@@ -23,7 +23,7 @@
     <color name="startpink">#ff3eff</color>
     <color name="endpink">#ff00ff</color>
     <color name="opacityDark">#bfbfbf</color>
-    <color name="grey">#000</color>
+    <color name="grey">#000</color>#008b99
     <color name="black_overlay">#66000000</color>
     <color name="bluetooth">#387ad1</color>
 

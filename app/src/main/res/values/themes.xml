@@ -30,21 +30,23 @@
         <item name="colorControlNormal">@color/text_color</item>
     </style>
 
-    <!-- Pulse Rate Activity   -->
-    <style name="Theme.pulse" parent="@style/Theme.AppCompat.Light">
-        <item name="actionBarTheme">@style/Pulse.ActionBarTheme</item>
-        <item name="actionBarStyle">@style/pulse.MyActionBar</item>
+    <!-- White BG action bar   -->
+    <style name="Theme.whiteActionBar" parent="@style/Theme.AppCompat.Light">
+        <item name="actionBarTheme">@style/action.ActionBarTheme</item>
+        <item name="actionBarStyle">@style/action.MyActionBar</item>
+        <item name="actionMenuTextColor">@color/card_view_blue_label</item>
     </style>
-    <style name="pulse.MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <style name="action.MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@color/white</item>
-        <item name="titleTextStyle">@style/Pulse.ActionBar.TitleTextStyle</item>
+        <item name="titleTextStyle">@style/action.ActionBar.TitleTextStyle</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="elevation">0dp</item>
+        <item name="android:paddingRight">10dp</item>
     </style>
-    <style name="Pulse.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    <style name="action.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/card_view_blue_label</item>
     </style>
-    <style name="Pulse.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+    <style name="action.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
         <item name="colorControlNormal">@color/card_view_blue_label</item>
     </style>
 </resources>

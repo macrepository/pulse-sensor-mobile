@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,13 +20,15 @@ public class MainActivity extends AppCompatActivity {
         catch (NullPointerException e){}
         setContentView(R.layout.activity_main);
 
-        LinearLayout connect, pulseRate, connectLabel, pulseRateLbael;
+        LinearLayout connect, pulseRate, connectLabel, pulseRateLabel;
+        ImageView userIcon;
 
         connect = findViewById(R.id.main_connect);
         pulseRate = findViewById(R.id.main_pulserate);
 
         connectLabel = findViewById(R.id.main_connect_label);
-        pulseRateLbael = findViewById(R.id.main_pulserate_label);
+        pulseRateLabel = findViewById(R.id.main_pulserate_label);
+        userIcon = findViewById(R.id.user_icon);
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,10 +54,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        pulseRateLbael.setOnClickListener(new View.OnClickListener() {
+        pulseRateLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intentPulseRate = new Intent(getApplication(), PulseRate.class);
+                startActivity(intentPulseRate);
+            }
+        });
+
+        userIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentPulseRate = new Intent(getApplication(), User.class);
                 startActivity(intentPulseRate);
             }
         });

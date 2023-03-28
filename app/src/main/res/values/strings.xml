@@ -1,9 +1,14 @@
 <resources>
 
     <string name="app_name">TIBIALIZER</string>
+
     <!--Main Activity-->
     <string name="main_connect_label">CONNECT</string>
     <string name="main_pulse_rate_label">PULSE RATE</string>
+    <string name="greetings_name">Good Day, Maria!</string>
+    <string name="greetings">Welcome to Tibializer!</string>
+    <string name="about_label">What is TIBIALIZER</string>
+    <string name="about">Tibializer is a pulse rate monitoring sock, made using a microcontroller chip and a heart rate sensor that connects to this app that makes it possible for this innovative pulse sensor accessory. For its utilization, the device must be worn as a sock that reaches the user\'s ankle, where the sensor would detect the pulse in the posterior tibial artery. Then, it will send the data to the accompanying mobile-app in real time that notifies and updates their pulse rate through their smartphone. This aims to assist people suffering from heart problems or cardiovascular diseases in going about their daily lives. Although this device cannot cure, it intends to provide an early warning in case of any anomalies or deviations from the normal range and reduce the number of fatalities caused by cardiovascular disease worldwide.</string>
 
     <!--Activity Connect Bluetooth-->
     <string name="btn_switch">Enable</string>
@@ -23,9 +28,21 @@
     <string name="default_device_address">000000000</string>
     <string name="btn_device_paired">PAIR</string>
 
-    <string name="greetings_name">Good Day, Maria!</string>
-    <string name="greetings">Welcome to Tibializer!</string>
+    <!--User Profile Activity-->
+    <string name="profile_label">Profile</string>
+    <string name="name_label">Name</string>
+    <string name="age_label">Age</string>
+    <string name="birthday_label">Birthday</string>
+    <string name="sex_label">Sex</string>
+    <string name="Contact_number_label">Contact Number</string>
+    <string name="address_label">Address</string>
+    <string name="emergency_contact_label">Emergency Contacts</string>
+    <string name="date_format">mm/dd/yyyy</string>
+    <string name="save_label">Save</string>
+    <string-array name="sex">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Others</item>
+    </string-array>
 
-    <string name="about_label">What is TIBIALIZER</string>
-    <string name="about">Tibializer is a pulse rate monitoring sock, made using a microcontroller chip and a heart rate sensor that connects to this app that makes it possible for this innovative pulse sensor accessory. For its utilization, the device must be worn as a sock that reaches the user\'s ankle, where the sensor would detect the pulse in the posterior tibial artery. Then, it will send the data to the accompanying mobile-app in real time that notifies and updates their pulse rate through their smartphone. This aims to assist people suffering from heart problems or cardiovascular diseases in going about their daily lives. Although this device cannot cure, it intends to provide an early warning in case of any anomalies or deviations from the normal range and reduce the number of fatalities caused by cardiovascular disease worldwide.</string>
 </resources>
