@@ -7,8 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ArrayList<String> user;
+    com.example.pulsesensorysock.model.User db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         catch (NullPointerException e){}
         setContentView(R.layout.activity_main);
 
+        TextView greeting;
         LinearLayout connect, pulseRate, connectLabel, pulseRateLabel;
         ImageView userIcon;
 
@@ -29,6 +36,16 @@ public class MainActivity extends AppCompatActivity {
         connectLabel = findViewById(R.id.main_connect_label);
         pulseRateLabel = findViewById(R.id.main_pulserate_label);
         userIcon = findViewById(R.id.user_icon);
+        greeting = findViewById(R.id.greeting);
+
+        db = new com.example.pulsesensorysock.model.User(this);
+
+        //Check and Retrieve user data
+        user = db.getUser();
+
+        if (user.size() > 0) {
+            greeting.setText("Good Day, " + user.get(1) + "!");
+        }
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
