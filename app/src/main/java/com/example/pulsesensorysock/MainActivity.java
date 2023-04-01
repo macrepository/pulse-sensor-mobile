@@ -9,12 +9,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.pulsesensorysock.helper.Helper;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> user;
+    private String phoneNumber;
+
     com.example.pulsesensorysock.model.User db;
+
+    //Helper
+    Helper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +47,14 @@ public class MainActivity extends AppCompatActivity {
 
         db = new com.example.pulsesensorysock.model.User(this);
 
+        helper = new Helper(getApplicationContext());
+
         //Check and Retrieve user data
         user = db.getUser();
 
         if (user.size() > 0) {
             greeting.setText("Good Day, " + user.get(1) + "!");
+            this.phoneNumber = user.get(8);
         }
 
         connect.setOnClickListener(new View.OnClickListener() {
@@ -86,5 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intentPulseRate);
             }
         });
+
+        helper.showAlertDialog(this, this.phoneNumber);
     }
 }

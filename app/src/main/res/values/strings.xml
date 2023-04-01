@@ -45,4 +45,14 @@
         <item>Others</item>
     </string-array>
 
+
+    <!--Alert Design-->
+    <string name="warning_label">WARNING!</string>
+    <string name="waning_description1">We have detected that your pulse rate</string>
+    <string name="waning_description2">rate is in critical condition</string>
+    <string name="warning_footer1">Would you like to call your emergency</string>
+    <string name="warning_footer2">contact?</string>
+    <string name="warning_button_yes">YES</string>
+    <string name="warning_button_no">NO</string>
+
 </resources>

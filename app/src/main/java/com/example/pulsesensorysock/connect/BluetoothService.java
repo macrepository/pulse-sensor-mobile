@@ -6,13 +6,20 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.pulsesensorysock.Connect;
 import com.example.pulsesensorysock.PulseRate;
+import com.example.pulsesensorysock.helper.MyDialog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,9 +41,7 @@ public class BluetoothService extends Service {
     private Thread workerThread;
 
     @Override
-    public  void onCreate(){
-        super.onCreate();
-    }
+    public  void onCreate(){ super.onCreate(); }
 
     IBinder mBinder = new LocalBinder();
     @Override
@@ -196,8 +201,12 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
-        closeSocket();
+
+        try {
+            closeSocket();
+        } catch (Throwable e) {
+
+        }
     }
 
     private void closeSocket() {
