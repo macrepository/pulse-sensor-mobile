@@ -97,14 +97,27 @@ public class Connect extends AppCompatActivity {
                 }
             });
 
+    com.example.pulsesensorysock.model.User db;
+
     //Helper
-    Helper helper;
+    static Helper helper;
+
+    static String phoneNumber;
+    static boolean isActive;
+    static Context thisActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
+                Log.e("Error"+Thread.currentThread().getStackTrace()[2],paramThrowable.getLocalizedMessage());
+            }
+        });
+
+        db = new com.example.pulsesensorysock.model.User(this);
         helper = new Helper(getApplicationContext());
 
         //UI controls
@@ -118,6 +131,20 @@ public class Connect extends AppCompatActivity {
         lvAvailable = findViewById(R.id.lv_available);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        //Check and Retrieve user data
+        ArrayList<String> user = db.getUser();
+
+        if (user.size() > 0) {
+            String contactEmerg1 = user.get(8);
+            this.phoneNumber = user.get(10);
+
+            if (contactEmerg1 != null && !contactEmerg1.isEmpty()) {
+                this.phoneNumber = contactEmerg1;
+            }
+        }
+
+        thisActivity = this;
 
         //Initialize other tools
         initializeProgressDialog();
@@ -209,6 +236,10 @@ public class Connect extends AppCompatActivity {
 
     private void startBluetoothService()
     {
+        if (progressDialog == null) {
+            initializeProgressDialog();
+        }
+
         progressDialog.setTitle("Connecting...");
         progressDialog.show();
 
@@ -226,11 +257,12 @@ public class Connect extends AppCompatActivity {
                     scrollViewFocusUp();
                     sleep(500);
                 } catch (Exception e) {
-
+                    progressDialog.dismiss();
                 } catch (Throwable t) {
-
+                    progressDialog.dismiss();
                 } finally {
-                    if (!BluetoothService.isConnected(myDevice)) {
+                    if (myDevice != null && !BluetoothService.isConnected(myDevice)) {
+                        progressDialog.dismiss();
                         startBluetoothService();
                     } else {
                         progressDialog.dismiss();
@@ -372,29 +404,37 @@ public class Connect extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void setBluetoothDisabled() {
-        //Disable bluetooth
-        bluetoothAdapter.disable();
+        try {
+            //Disable bluetooth
+            bluetoothAdapter.disable();
 
-        //UI controls
-        btSwitch.setText("Enable");
-        btSwitch.setChecked(false);
-        btStatus.setText("Not Connected");
-        btStatus.setVisibility(View.INVISIBLE);
+            //UI controls
+            btSwitch.setText("Enable");
+            btSwitch.setChecked(false);
+            btStatus.setText("Not Connected");
+            btStatus.setVisibility(View.INVISIBLE);
 
-        // Paired BT
-        txtPaired.setVisibility(View.INVISIBLE);
-        if (pairedDeviceList != null && !pairedDeviceList.isEmpty()) pairedDeviceList.clear();
+            // Paired BT
+            txtPaired.setVisibility(View.INVISIBLE);
+            if (pairedDeviceList != null && !pairedDeviceList.isEmpty()) pairedDeviceList.clear();
 
-        pairedDeviceAdapter.notifyDataSetChanged();
-        setListViewHeightBasedOnChildren(lvPaired);
+            pairedDeviceAdapter.notifyDataSetChanged();
+            setListViewHeightBasedOnChildren(lvPaired);
 
-        //Available BT
-        btnScan.setVisibility(View.INVISIBLE);
-        txtAvailable.setVisibility(View.INVISIBLE);
-        if (availableDeviceList != null && !availableDeviceList.isEmpty()) availableDeviceList.clear();
+            //Available BT
+            btnScan.setVisibility(View.INVISIBLE);
+            txtAvailable.setVisibility(View.INVISIBLE);
+            if (availableDeviceList != null && !availableDeviceList.isEmpty()) availableDeviceList.clear();
 
-        availableDeviceAdapter.notifyDataSetChanged();
-        setListViewHeightBasedOnChildren(lvAvailable);
+            availableDeviceAdapter.notifyDataSetChanged();
+            setListViewHeightBasedOnChildren(lvAvailable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            startBluetoothService();
+        } catch (Throwable th) {
+            th.printStackTrace();
+            startBluetoothService();
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -408,11 +448,15 @@ public class Connect extends AppCompatActivity {
 
             if(pairedDevices.size() > 0) {
                 for (BluetoothDevice device : pairedDevices) {
-                    pairedDeviceList.add(device);
+                    String deviceName = device.getName();
 
-                    // Display status if has connection
-                    if (BluetoothService.isConnected(device)) {
-                        btStatus.setText("Connected to " + device.getName());
+                    if (deviceName != null && deviceName.contains("HC-")) {
+                        pairedDeviceList.add(device);
+
+                        // Display status if has connection
+                        if (BluetoothService.isConnected(device)) {
+                            btStatus.setText("Connected to " + deviceName);
+                        }
                     }
                 }
             }
@@ -491,7 +535,11 @@ public class Connect extends AppCompatActivity {
 
                 // Do not add to list of available devices, If it is found in the list of paired devices
                 if (!pairedDeviceList.contains(device)) {
-                    availableDeviceList.add(device);
+                    String deviceName =  device.getName();
+
+                    if (deviceName != null && deviceName.contains("HC-")) {
+                        availableDeviceList.add(device);
+                    }
                 }
             }
         }
@@ -589,15 +637,24 @@ public class Connect extends AppCompatActivity {
 
     // ============================Bluetooth Service========================================
     public static void notifyBtStatus(String msg) {
-        btStatus.setText(msg);
+        if (btStatus != null) {
+            btStatus.setText(msg);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        isActive = true;
 
         Intent mIntent = new Intent(this, BluetoothService.class);
         bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        isActive = false;
     }
 
     ServiceConnection mConnection = new ServiceConnection() {
@@ -623,6 +680,20 @@ public class Connect extends AppCompatActivity {
         if(mBounded) {
             unbindService(mConnection);
             mBounded = false;
+        }
+    }
+
+    public static void checkHeartRate(String rate) {
+        String cleanStrRate = rate.replaceAll("[^\\d.]", "");
+
+        if (isActive && helper.isNumeric(cleanStrRate)) {
+            int minimumHeartRateToAlert = 130;
+            int heartRateCount = Integer.parseInt(cleanStrRate);
+
+            if (heartRateCount >= minimumHeartRateToAlert) {
+                Log.d("Main activity", "Heart Rate: " + heartRateCount);
+                helper.showAlertDialog(thisActivity, phoneNumber);
+            }
         }
     }
 }

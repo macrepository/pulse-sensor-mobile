@@ -2,8 +2,10 @@ package com.example.pulsesensorysock;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,12 +18,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> user;
-    private String phoneNumber;
 
     com.example.pulsesensorysock.model.User db;
 
     //Helper
-    Helper helper;
+    static Helper helper;
+
+    static String phoneNumber;
+    static boolean isActive;
+    static Context thisActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (user.size() > 0) {
             greeting.setText("Good Day, " + user.get(1) + "!");
-            this.phoneNumber = user.get(8);
+            String contactEmerg1 = user.get(8);
+            this.phoneNumber = user.get(10);
+
+            if (contactEmerg1 != null && !contactEmerg1.isEmpty()) {
+                this.phoneNumber = contactEmerg1;
+            }
         }
+
+        thisActivity = this;
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +108,30 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intentPulseRate);
             }
         });
+    }
 
-        helper.showAlertDialog(this, this.phoneNumber);
+    public static void checkHeartRate(String rate) {
+        String cleanStrRate = rate.replaceAll("[^\\d.]", "");
+
+        if (isActive && helper.isNumeric(cleanStrRate)) {
+            int minimumHeartRateToAlert = 130;
+            int heartRateCount = Integer.parseInt(cleanStrRate);
+
+            if (heartRateCount >= minimumHeartRateToAlert) {
+                Log.d("Main activity", "Heart Rate: " + heartRateCount);
+                helper.showAlertDialog(thisActivity, phoneNumber);
+            }
+        }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        isActive = true;
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        isActive = false;
     }
 }

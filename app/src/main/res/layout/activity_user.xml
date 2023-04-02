@@ -105,7 +105,7 @@
                         android:layout_height="match_parent"
                         android:ems="10"
                         android:inputType="date"
-                        android:hint="mm/dd/yyy" />
+                        android:hint="mm/dd/yyyy" />
                 </LinearLayout>
 
                 <LinearLayout

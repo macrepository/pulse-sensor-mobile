@@ -28,9 +28,9 @@
                 <TextView
                     android:id="@+id/heart_rate"
                     android:layout_width="match_parent"
-                    android:layout_height="190dp"
-                    android:gravity="center_horizontal"
-                    android:paddingTop="50dp"
+                    android:layout_height="166dp"
+                    android:layout_marginTop="50dp"
+                    android:gravity="center"
                     android:text="@string/heart_rate_default"
                     android:textSize="110sp"
                     android:textStyle="bold" />
@@ -38,14 +38,14 @@
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
-                    android:layout_height="51dp"
+                    android:layout_height="30dp"
                     app:srcCompat="@drawable/pulserate_icon"
                     app:tint="#ff0000" />
 
                 <TextView
                     android:id="@+id/textView4"
                     android:layout_width="match_parent"
-                    android:layout_height="29dp"
+                    android:layout_height="25dp"
                     android:gravity="center|center_horizontal"
                     android:text="@string/heart_rate_label" />
 

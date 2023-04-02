@@ -18,7 +18,9 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.pulsesensorysock.Connect;
+import com.example.pulsesensorysock.MainActivity;
 import com.example.pulsesensorysock.PulseRate;
+import com.example.pulsesensorysock.User;
 import com.example.pulsesensorysock.helper.MyDialog;
 
 import java.io.IOException;
@@ -152,6 +154,9 @@ public class BluetoothService extends Service {
                                                 //Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
                                                 Log.i("From device", "" + data);
                                                 PulseRate.displayHeartRate(data);
+                                                MainActivity.checkHeartRate(data);
+                                                User.checkHeartRate(data);
+                                                Connect.checkHeartRate(data);
                                             }
                                         });
 
@@ -204,21 +209,28 @@ public class BluetoothService extends Service {
 
         try {
             closeSocket();
-        } catch (Throwable e) {
-
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
-    private void closeSocket() {
+    private void  closeSocket() {
         try {
-            if (bluetoothSocket != null) {
-                bluetoothSocket.close();
+            if (bluetoothSocket != null ) {
                 stopWorker = true;
+            }
+            if (mmOutputStream != null) {
                 mmOutputStream.close();
+                stopWorker = true;
+            }
+            if (mmInputStream != null) {
                 mmInputStream.close();
+                stopWorker = true;
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 }
